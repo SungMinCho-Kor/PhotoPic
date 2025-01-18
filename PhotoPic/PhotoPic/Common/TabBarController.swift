@@ -24,28 +24,30 @@ class TabBarController: UITabBarController {
     }
     
     private func configureTabs() {
-        let topicViewController = TopicViewController()
-        let mediaViewController = MediaViewController()
-        let searchViewController = SearchViewController()
-        let likeViewController = LikeViewController()
+        let topicNavigationController = createNavigationController(
+            viewController: TopicViewController(),
+            tabImage: UIImage(systemName: "chart.line.uptrend.xyaxis")
+        )
+        topicNavigationController.navigationBar.prefersLargeTitles = true
+        let mediaNavigationController = createNavigationController(
+            viewController: MediaViewController(),
+            tabImage: UIImage(systemName: "tv.and.mediabox")
+        )
+        let searchNavigationController = createNavigationController(
+            viewController: SearchViewController(),
+            tabImage: UIImage(systemName: "magnifyingglass")
+        )
+        let likeNavigationController = createNavigationController(
+            viewController: LikeViewController(),
+            tabImage: UIImage(systemName: "heart")
+        )
+        
         setViewControllers(
             [
-                createNavigationController(
-                    viewController: topicViewController,
-                    tabImage: UIImage(systemName: "chart.line.uptrend.xyaxis")
-                ),
-                createNavigationController(
-                    viewController: mediaViewController,
-                    tabImage: UIImage(systemName: "tv.and.mediabox")
-                ),
-                createNavigationController(
-                    viewController: searchViewController,
-                    tabImage: UIImage(systemName: "magnifyingglass")
-                ),
-                createNavigationController(
-                    viewController: likeViewController,
-                    tabImage: UIImage(systemName: "heart")
-                )
+                topicNavigationController,
+                mediaNavigationController,
+                searchNavigationController,
+                likeNavigationController
             ],
             animated: false
         )
@@ -65,5 +67,4 @@ class TabBarController: UITabBarController {
         
         return navigationController
     }
-    
 }
