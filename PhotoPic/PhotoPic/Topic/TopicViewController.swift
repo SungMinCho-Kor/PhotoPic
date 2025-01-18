@@ -11,6 +11,7 @@ import Alamofire
 
 final class TopicViewController: BaseViewController {
     private var topicList: [TopicContent] = []
+    private var isRefreshEnabled: Bool = true
     
     private let titleLabel = UILabel()
     private lazy var topicCollectionView = UICollectionView(
@@ -108,45 +109,62 @@ final class TopicViewController: BaseViewController {
     }
     
     private func fetchData() {
+        if !isRefreshEnabled {
+            Task {
+                try await Task.sleep(for: .milliseconds(600))
+                refreshControl.endRefreshing()
+            }
+            return
+        }
         Task {
             let randomTopics = Topic.allCases.shuffled().prefix(3)
             var newList: [TopicContent] = []
             do {
                 try await withThrowingTaskGroup(of: TopicContent.self) { group in
-                    for topic in randomTopics {
+                    randomTopics.forEach { topic in
                         group.addTask {
                             return try await APIService.shared.fetchTopic(topic: topic)
                         }
                     }
-                    
                     for try await result in group {
                         newList.append(result)
                     }
                 }
-                if refreshControl.isRefreshing {
-                    try await Task.sleep(nanoseconds: 600_000_000)
-                    refreshControl.endRefreshing()
-                }
-                
+                try await Task.sleep(for: .milliseconds(600))
+                refreshControl.endRefreshing()
                 topicList = newList
                 topicCollectionView.reloadData()
-                
-                for idx in 0..<topicList.count {
-                    if topicList[idx].list.isEmpty {
-                        continue
-                    }
-                    topicCollectionView.scrollToItem(
-                        at: IndexPath(
-                            row: 0,
-                            section: idx
-                        ),
-                        at: .left,
-                        animated: false
-                    )
-                }
+                isRefreshEnabled = false
+                enableRefreshAfterTime()
+                scrollToLeft()
             } catch {
                 // TODO: Error 처리
                 dump(error)
+            }
+        }
+    }
+}
+
+//MARK: Refresh
+extension TopicViewController {
+    private func enableRefreshAfterTime() {
+        Task {
+            try? await Task.sleep(for: .seconds(60))
+            isRefreshEnabled = true
+        }
+    }
+    
+    private func scrollToLeft() {
+        for idx in 0..<topicList.count {
+            if !topicList[idx].list.isEmpty {
+                topicCollectionView.scrollToItem(
+                    at: IndexPath(
+                        row: 0,
+                        section: idx
+                    ),
+                    at: .left,
+                    animated: false
+                )
             }
         }
     }
