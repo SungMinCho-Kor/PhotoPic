@@ -6,14 +6,17 @@
 //
 
 import UIKit
+import SnapKit
 import Kingfisher
 
 final class TopicCollectionViewCell: BaseCollectionViewCell {
     private let imageView = UIImageView()
     private let likeChip = LikeChip()
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.image = nil
+        likeChip.setCount(0)
     }
     
     override func configureHierarchy() {
@@ -35,10 +38,14 @@ final class TopicCollectionViewCell: BaseCollectionViewCell {
     
     override func configureViews() {
         imageView.layer.cornerRadius = 10
-        imageView.backgroundColor = .systemGreen // TODO: 삭제
+        imageView.clipsToBounds = true
+        imageView.backgroundColor = .systemGray3
     }
     
-    func configure(image: String, likeCount: Int) {
+    func configure(
+        image: String,
+        likeCount: Int
+    ) {
         imageView.kf.setImage(with: URL(string: image))
         likeChip.setCount(likeCount)
     }

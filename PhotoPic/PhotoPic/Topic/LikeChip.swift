@@ -15,7 +15,6 @@ final class LikeChip: BaseView {
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = bounds.height / 2
-//        layer.masksToBounds = true
     }
     
     override func configureHierarchy() {
@@ -47,7 +46,7 @@ final class LikeChip: BaseView {
         starCountLabel.font = .systemFont(ofSize: 12)
     }
     
-    func setCount(_ count: Int) {
-        starCountLabel.text = count.formatted()
+    func setCount(_ count: Int?) {
+        starCountLabel.text = count?.formatted()
     }
 }
