@@ -28,7 +28,6 @@ class TabBarController: UITabBarController {
             viewController: TopicViewController(),
             tabImage: UIImage(systemName: "chart.line.uptrend.xyaxis")
         )
-        topicNavigationController.navigationBar.prefersLargeTitles = true
         let mediaNavigationController = createNavigationController(
             viewController: MediaViewController(),
             tabImage: UIImage(systemName: "tv.and.mediabox")
@@ -63,7 +62,6 @@ class TabBarController: UITabBarController {
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = .systemBackground
         navigationController.navigationBar.standardAppearance = appearance
-        navigationController.navigationBar.scrollEdgeAppearance = appearance
         
         return navigationController
     }

@@ -15,6 +15,7 @@ extension Encodable {
                 with: data,
                 options: .allowFragments
             ) as? [String: Any] else {
+            print(#function, "EncodableWrong")
             return [:]
         }
         

@@ -14,7 +14,6 @@ enum DefaultRouter {
 
 extension DefaultRouter: Router {
     var baseURL: String {
-        dump(Environment.baseURL.value)
         return Environment.baseURL.value
     }
     
@@ -28,14 +27,14 @@ extension DefaultRouter: Router {
     var method: HTTPMethod {
         switch self {
         case .fetchTopicList:
-                .get
+            return .get
         }
     }
     
     var headers: [String : String] {
         switch self {
         default:
-            [
+            return [
                 "Content-Type": "application/json",
                 "Authorization": "Client-ID \(Environment.accessToken.value)"
             ]
@@ -52,7 +51,7 @@ extension DefaultRouter: Router {
     var encoding: (any ParameterEncoding)? {
         switch self {
         default:
-            nil
+            return nil
         }
     }
     
