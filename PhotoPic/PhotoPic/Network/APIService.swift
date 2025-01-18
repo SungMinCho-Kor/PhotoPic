@@ -1,0 +1,30 @@
+//
+//  APIService.swift
+//  PhotoPic
+//
+//  Created by 조성민 on 1/18/25.
+//
+
+import Alamofire
+import Foundation
+
+final class APIService {
+    static let shared = APIService()
+    
+    private init() {}
+    
+    func fetchTopic(topic: Topic) async throws -> TopicContent {
+        let response = await AF.request(DefaultRouter.fetchTopicList(topic: topic))
+            .serializingDecodable([TopicElement].self)
+            .response
+        switch response.result {
+        case .success(let element):
+            return TopicContent(
+                topic: topic,
+                list: element
+            )
+        case .failure(let error):
+            throw error
+        }
+    }
+}
