@@ -10,6 +10,7 @@ import Foundation
 
 enum DefaultRouter {
     case fetchTopicList(topic: Topic)
+    case fetchSearchList(searchRequest: SearchRequest)
 }
 
 extension DefaultRouter: Router {
@@ -21,12 +22,16 @@ extension DefaultRouter: Router {
         switch self {
         case .fetchTopicList(let topic):
             return "/topics/\(topic.path)/photos"
+        case .fetchSearchList(let searchRequest):
+            return "/search/photos"
         }
     }
     
     var method: HTTPMethod {
         switch self {
         case .fetchTopicList:
+            return .get
+        case .fetchSearchList:
             return .get
         }
     }
@@ -45,11 +50,15 @@ extension DefaultRouter: Router {
         switch self {
         case .fetchTopicList:
             return [:]
+        case .fetchSearchList(let searchRequest):
+            return searchRequest.asDictionary()
         }
     }
     
     var encoding: (any ParameterEncoding)? {
         switch self {
+        case .fetchSearchList:
+            return URLEncoding.default
         default:
             return nil
         }

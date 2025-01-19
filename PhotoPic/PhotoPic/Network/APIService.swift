@@ -27,4 +27,17 @@ final class APIService {
             throw error
         }
     }
+    
+    func fetchSearchList(searchRequest: SearchRequest) async throws -> SearchResponse {
+        let response = await AF.request(DefaultRouter.fetchSearchList(searchRequest: searchRequest))
+            .serializingDecodable(SearchResponse.self)
+            .response
+        
+        switch response.result {
+        case .success(let data):
+            return data
+        case .failure(let error):
+            throw error
+        }
+    }
 }
