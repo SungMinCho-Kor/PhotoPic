@@ -70,6 +70,15 @@ final class TopicViewController: BaseViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: TopicCollectionViewHeader.identifier
         )
+        
+        let backButton = UIBarButtonItem(
+            title: "",
+            style: .plain,
+            target: self,
+            action: nil
+        )
+        backButton.tintColor = .black
+        navigationItem.backBarButtonItem = backButton
     }
     
     private func createCollectionView() -> UICollectionViewLayout {
@@ -227,5 +236,16 @@ extension TopicViewController: UICollectionViewDataSource, UICollectionViewDeleg
         header.setTitle(topicList[indexPath.section].topic.rawValue)
         
         return header
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        let detailViewController = PhotoDetailViewController(photoDetail: topicList[indexPath.section].list[indexPath.row])
+        navigationController?.pushViewController(
+            detailViewController,
+            animated: true
+        )
     }
 }

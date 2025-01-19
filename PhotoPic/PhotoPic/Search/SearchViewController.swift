@@ -125,6 +125,15 @@ final class SearchViewController: BaseViewController {
             weight: .bold
         )
         emptyStateLabel.text = "사진을 검색해보세요"
+        
+        let backButton = UIBarButtonItem(
+            title: "",
+            style: .plain,
+            target: self,
+            action: nil
+        )
+        backButton.tintColor = .black
+        navigationItem.backBarButtonItem = backButton
     }
     
     private func fetchData() async throws -> SearchResponse {
@@ -247,6 +256,17 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         )
         
         return cell
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        let detailViewController = PhotoDetailViewController(photoDetail: prevState.list[indexPath.row])
+        navigationController?.pushViewController(
+            detailViewController,
+            animated: true
+        )
     }
 }
 
