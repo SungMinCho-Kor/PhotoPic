@@ -7,7 +7,7 @@
 
 struct TopicContent {
     let topic: Topic
-    let list: [TopicElement]
+    let list: [PhotoDetail]
 }
 
 enum Topic: String, Encodable, CaseIterable {

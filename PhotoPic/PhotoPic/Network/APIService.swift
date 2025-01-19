@@ -15,7 +15,7 @@ final class APIService {
     
     func fetchTopic(topic: Topic) async throws -> TopicContent {
         let response = await AF.request(DefaultRouter.fetchTopicList(topic: topic))
-            .serializingDecodable([TopicElement].self)
+            .serializingDecodable([PhotoDetail].self)
             .response
         switch response.result {
         case .success(let element):

@@ -8,7 +8,7 @@
 struct SearchViewControllerState {
     var currentPage: Int = 1
     var totalPages: Int = 1
-    var list: [SearchResult] = []
+    var list: [PhotoDetail] = []
     var order: SearchOrder = .relevant
     var filterColorIndex: Int? = nil
     var searchText: String = ""
