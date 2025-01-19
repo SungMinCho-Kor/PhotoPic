@@ -40,4 +40,17 @@ final class APIService {
             throw error
         }
     }
+    
+    func fetchStatistics(id: String) async throws -> StatisticsResponse {
+        let response = await AF.request(DefaultRouter.fetchStatistics(id: id))
+            .serializingDecodable(StatisticsResponse.self)
+            .response
+        
+        switch response.result {
+        case .success(let data):
+            return data
+        case .failure(let error):
+            throw error
+        }
+    }
 }
