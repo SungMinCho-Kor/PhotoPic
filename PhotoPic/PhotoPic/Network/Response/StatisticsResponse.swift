@@ -12,4 +12,14 @@ struct StatisticsResponse: Decodable {
 
 struct Statistics: Decodable {
     let total: Int
+    let historical: Historical
+}
+
+struct Historical: Decodable {
+    let values: [HistoricalValue]
+}
+
+struct HistoricalValue: Decodable, Hashable {
+    let date: String
+    let value: Int
 }

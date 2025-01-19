@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import SwiftUI
 
 final class PhotoDetailViewController: BaseViewController {
     private let scrollView = UIScrollView()
@@ -18,12 +19,20 @@ final class PhotoDetailViewController: BaseViewController {
     private let sizeInformationView = InformationRowView()
     private let viewCountInformationView = InformationRowView()
     private let downloadInformationView = InformationRowView()
+    private let chartLabel = UILabel()
+    private let chartSegmentedControl = UISegmentedControl(
+        items: [
+            "조회",
+            "다운로드"
+        ]
+    )
+    private let viewChartView = UIHostingController(rootView: ChartView())
+    private let downloadChartView = UIHostingController(rootView: ChartView())
     
     private let photoDetail: PhotoDetail
     
     init(photoDetail: PhotoDetail) {
         self.photoDetail = photoDetail
-        
         super.init(
             nibName: nil,
             bundle: nil
@@ -37,7 +46,7 @@ final class PhotoDetailViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchStatisticsData()
-        configure()
+        setSwiftUIView()
     }
     
     override func configureHierarchy() {
@@ -47,7 +56,11 @@ final class PhotoDetailViewController: BaseViewController {
             profileView,
             imageView,
             informationLabel,
-            informationStackView
+            informationStackView,
+            chartLabel,
+            chartSegmentedControl,
+            viewChartView.view,
+            downloadChartView.view
         ].forEach(contentView.addSubview)
         [
             sizeInformationView,
@@ -87,7 +100,34 @@ final class PhotoDetailViewController: BaseViewController {
             make.top.equalTo(imageView.snp.bottom).offset(18)
             make.leading.equalTo(informationLabel.snp.trailing)
             make.trailing.equalToSuperview().inset(16)
-            make.bottom.equalTo(contentView).inset(40)  //TODO: 다른 뷰에서 설정
+//            make.bottom.equalTo(contentView).inset(40)  //TODO: 다른 뷰에서 설정
+        }
+        
+        chartLabel.snp.makeConstraints { make in
+            make.top.equalTo(informationStackView.snp.bottom).offset(16)
+            make.leading.equalTo(contentView).offset(16)
+            make.width.equalTo(80)
+        }
+        
+        chartSegmentedControl.snp.makeConstraints { make in
+            make.leading.equalTo(chartLabel.snp.trailing)
+            make.centerY.equalTo(chartLabel)
+        }
+        
+        viewChartView.view.snp.makeConstraints { make in
+            make.top.equalTo(chartSegmentedControl.snp.bottom).offset(16)
+            make.leading.equalTo(chartSegmentedControl.snp.leading)
+            make.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(200)
+            make.bottom.equalTo(contentView).inset(40)
+        }
+        
+        downloadChartView.view.snp.makeConstraints { make in
+            make.top.equalTo(chartSegmentedControl.snp.bottom).offset(16)
+            make.leading.equalTo(chartSegmentedControl.snp.leading)
+            make.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(200)
+            make.bottom.equalTo(contentView).inset(40)
         }
     }
     
@@ -101,9 +141,21 @@ final class PhotoDetailViewController: BaseViewController {
         
         informationStackView.spacing = 16
         informationStackView.axis = .vertical
-    }
-    
-    private func configure() {
+        
+        chartLabel.font = .systemFont(
+            ofSize: 20,
+            weight: .black
+        )
+        chartLabel.text = "차트"
+        
+        downloadChartView.view.isHidden = true
+        chartSegmentedControl.addTarget(
+            self,
+            action: #selector(chartSegmentedControlChanged),
+            for: .valueChanged
+        )
+        chartSegmentedControl.selectedSegmentIndex = 0
+        
         profileView.configure(
             image: photoDetail.user.profileImage.value,
             name: photoDetail.user.name,
@@ -129,6 +181,26 @@ final class PhotoDetailViewController: BaseViewController {
                 title: "조회수",
                 content: result.views.total.formatted()
             )
+            downloadChartView.rootView.configure(elements: result.downloads.historical.values)
+            viewChartView.rootView.configure(elements: result.views.historical.values)
         }
+    }
+    
+    private func setSwiftUIView() {
+        addChild(viewChartView)
+        viewChartView.view.frame = view.frame
+        viewChartView.didMove(toParent: self)
+        addChild(downloadChartView)
+        downloadChartView.view.frame = view.frame
+        downloadChartView.didMove(toParent: self)
+    }
+}
+
+//MARK: Objective-C
+extension PhotoDetailViewController {
+    @objc
+    private func chartSegmentedControlChanged(_ sender: UISegmentedControl) {
+        downloadChartView.view.isHidden = sender.selectedSegmentIndex == 0
+        viewChartView.view.isHidden = sender.selectedSegmentIndex != 0
     }
 }

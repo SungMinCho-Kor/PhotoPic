@@ -5,8 +5,6 @@
 //  Created by 조성민 on 1/18/25.
 //
 
-
-
 import UIKit
 
 class BaseView: UIView, ViewConfiguration {
