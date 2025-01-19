@@ -10,7 +10,7 @@ import SnapKit
 
 final class LikeChip: BaseView {
     private let starImageView = UIImageView()
-    let starCountLabel = UILabel()
+    private let starCountLabel = UILabel()
     
     override func layoutSubviews() {
         super.layoutSubviews()
