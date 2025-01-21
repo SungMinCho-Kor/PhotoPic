@@ -100,7 +100,6 @@ final class PhotoDetailViewController: BaseViewController {
             make.top.equalTo(imageView.snp.bottom).offset(18)
             make.leading.equalTo(informationLabel.snp.trailing)
             make.trailing.equalToSuperview().inset(16)
-//            make.bottom.equalTo(contentView).inset(40)  //TODO: 다른 뷰에서 설정
         }
         
         chartLabel.snp.makeConstraints { make in
