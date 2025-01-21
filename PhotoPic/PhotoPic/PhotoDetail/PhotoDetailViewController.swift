@@ -161,7 +161,7 @@ final class PhotoDetailViewController: BaseViewController {
             createdAt: photoDetail.createdAt
         )
         
-        imageView.kf.setImage(with: URL(string: photoDetail.image.value))
+        imageView.setImage(with: photoDetail.image.value)
         
         sizeInformationView.configure(
             title: "크기",

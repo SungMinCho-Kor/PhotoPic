@@ -23,7 +23,7 @@ extension DefaultRouter: Router {
         switch self {
         case .fetchTopicList(let topic):
             return "/topics/\(topic.path)/photos"
-        case .fetchSearchList(let searchRequest):
+        case .fetchSearchList:
             return "/search/photos"
         case .fetchStatistics(let id):
             return "/photos/\(id)/statistics"

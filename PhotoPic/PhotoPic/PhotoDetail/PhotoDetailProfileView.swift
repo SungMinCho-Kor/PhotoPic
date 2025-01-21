@@ -61,7 +61,7 @@ final class PhotoDetailProfileView: BaseView {
         name: String,
         createdAt: String
     ) {
-        profileImageView.kf.setImage(with: URL(string: image))
+        profileImageView.setImage(with: image)
         nameLabel.text = name
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"

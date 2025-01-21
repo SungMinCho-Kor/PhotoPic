@@ -270,6 +270,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return UICollectionViewCell()
         }
         let row = prevState.list[indexPath.row]
+        cell.cancel()
         cell.configure(
             image: row.image.value,
             like: row.likes
@@ -307,22 +308,27 @@ extension SearchViewController: UICollectionViewDataSourcePrefetching {
                 }
             }
         }
+//        for indexPath in indexPaths {
+//            guard let cell = collectionView.cellForItem(at: indexPath) as? SearchCollectionViewCell else {
+//                return
+//            }
+//            cell.configure(
+//                image: prevState.list[indexPath.row].image.value,
+//                like: prevState.list[indexPath.row].likes
+//            )
+//        }
     }
     
     //TODO: Cancel 오류 수정
-//    func collectionView(
-//        _ collectionView: UICollectionView,
-//        cancelPrefetchingForItemsAt indexPaths: [IndexPath]
-//    ) {
-//        for indexPath in indexPaths {
-//            guard let cell = collectionView.dequeueReusableCell(
-//                withReuseIdentifier: SearchCollectionViewCell.identifier,
-//                for: indexPath
-//            ) as? SearchCollectionViewCell else {
-//                print(#function, "SearchCollectionViewCell Wrong")
-//                return
-//            }
-//            cell.cancel()
-//        }
-//    }
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cancelPrefetchingForItemsAt indexPaths: [IndexPath]
+    ) {
+        for indexPath in indexPaths {
+            guard let cell = collectionView.cellForItem(at: indexPath) as? SearchCollectionViewCell else {
+                return
+            }
+            cell.cancel()
+        }
+    }
 }

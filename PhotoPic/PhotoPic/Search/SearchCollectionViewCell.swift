@@ -35,7 +35,7 @@ final class SearchCollectionViewCell: BaseCollectionViewCell {
         image: String,
         like: Int
     ) {
-        imageView.kf.setImage(with: URL(string: image))
+        imageView.setImage(with: image)
         likeChip.setCount(like)
     }
     
