@@ -17,8 +17,23 @@ struct ChartView: View {
                 x: .value("", $0.date),
                 y: .value("", $0.value)
             )
+            AreaMark(
+                x: .value("", $0.date),
+                y: .value("", $0.value)
+            )
+            .foregroundStyle(
+                LinearGradient(
+                    colors: [
+                        .blue,
+                        .clear
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
         }
         .chartXAxis(.hidden)
+        .chartYAxis(.hidden)
     }
     
     mutating func configure(elements: [HistoricalValue]) {
