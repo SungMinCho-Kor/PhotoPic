@@ -82,6 +82,9 @@ final class SearchViewController: BaseViewController {
         
         searchBar.delegate = self
         searchBar.searchBarStyle = .minimal
+        searchBar.searchTextField.placeholder = "키워드를 입력하세요"
+        searchBar.autocorrectionType = .no
+        searchBar.autocapitalizationType = .none
         
         divideView.backgroundColor = .systemGray4
         
@@ -92,6 +95,7 @@ final class SearchViewController: BaseViewController {
             SearchCollectionViewCell.self,
             forCellWithReuseIdentifier: SearchCollectionViewCell.identifier
         )
+        collectionView.keyboardDismissMode = .onDrag
         
         colorScrollView.showsHorizontalScrollIndicator = false
         colorScrollView.contentInset = UIEdgeInsets(
@@ -100,6 +104,7 @@ final class SearchViewController: BaseViewController {
             bottom: 0,
             right: 80
         )
+        colorScrollView.keyboardDismissMode = .onDrag
         
         colorStackView.spacing = 8
         colorStackView.distribution = .fillProportionally
@@ -125,6 +130,12 @@ final class SearchViewController: BaseViewController {
             weight: .bold
         )
         emptyStateLabel.text = "사진을 검색해보세요"
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(emptyStateLabelTapped)
+        )
+        emptyStateLabel.addGestureRecognizer(tapGesture)
+        emptyStateLabel.isUserInteractionEnabled = true
         
         let backButton = UIBarButtonItem(
             title: "",
@@ -183,8 +194,14 @@ extension SearchViewController {
     
     @objc
     private func orderButtonTapped(_ sender: UIButton) {
+        view.endEditing(true)
         nextState.order.toggle()
         orderButton.configuration?.title = nextState.order.buttonTitle
+    }
+    
+    @objc
+    private func emptyStateLabelTapped(_ sender: UITapGestureRecognizer) {
+        view.endEditing(true)
     }
 }
 
@@ -195,13 +212,16 @@ extension SearchViewController: UISearchBarDelegate {
             print("SearchBar Text Nil")
             return
         }
-        // TODO: Text 검사
-        fetchSearchData(query: text)
+        nextState.searchText = text
+        if nextState.searchText != prevState.searchText
+            || nextState.filterColorIndex != prevState.filterColorIndex
+            || nextState.order != prevState.order {
+            fetchSearchData(query: text)
+        }
     }
     
     private func fetchSearchData(query: String) {
         Task {
-            nextState.searchText = query
             prevState = nextState
             let newList = try await fetchData()
             prevState.list = newList.results
