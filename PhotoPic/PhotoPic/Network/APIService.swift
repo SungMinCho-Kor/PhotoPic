@@ -53,4 +53,17 @@ final class APIService {
             throw error
         }
     }
+    
+    func fetchRandomPhotos() async throws -> [PhotoDetail] {
+        let response = await AF.request(DefaultRouter.fetchRandomPhotos)
+            .serializingDecodable([PhotoDetail].self)
+            .response
+        
+        switch response.result {
+        case .success(let data):
+            return data
+        case .failure(let error):
+            throw error
+        }
+    }
 }

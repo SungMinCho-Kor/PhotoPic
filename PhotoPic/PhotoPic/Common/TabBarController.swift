@@ -28,10 +28,7 @@ final class TabBarController: UITabBarController {
             viewController: TopicViewController(),
             tabImage: UIImage(systemName: "chart.line.uptrend.xyaxis")
         )
-        let mediaNavigationController = createNavigationController(
-            viewController: MediaViewController(),
-            tabImage: UIImage(systemName: "tv.and.mediabox")
-        )
+        let mediaNavigationController = createMediaNavigationController()
         let searchNavigationController = createNavigationController(
             viewController: SearchViewController(),
             tabImage: UIImage(systemName: "magnifyingglass")
@@ -64,5 +61,16 @@ final class TabBarController: UITabBarController {
         navigationController.navigationBar.standardAppearance = appearance
         
         return navigationController
+    }
+    
+    private func createMediaNavigationController() -> UINavigationController {
+        let mediaNavigationController = UINavigationController(rootViewController: MediaViewController())
+        mediaNavigationController.tabBarItem.image = UIImage(systemName: "tv.and.mediabox")
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = .clear
+        appearance.configureWithTransparentBackground()
+        mediaNavigationController.navigationBar.standardAppearance = appearance
+        mediaNavigationController.navigationBar.scrollEdgeAppearance = appearance
+        return mediaNavigationController
     }
 }

@@ -308,15 +308,6 @@ extension SearchViewController: UICollectionViewDataSourcePrefetching {
                 }
             }
         }
-//        for indexPath in indexPaths {
-//            guard let cell = collectionView.cellForItem(at: indexPath) as? SearchCollectionViewCell else {
-//                return
-//            }
-//            cell.configure(
-//                image: prevState.list[indexPath.row].image.value,
-//                like: prevState.list[indexPath.row].likes
-//            )
-//        }
     }
     
     //TODO: Cancel 오류 수정

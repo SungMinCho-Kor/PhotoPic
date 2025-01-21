@@ -59,7 +59,8 @@ final class PhotoDetailProfileView: BaseView {
     func configure(
         image: String,
         name: String,
-        createdAt: String
+        createdAt: String,
+        isWhite: Bool = false
     ) {
         profileImageView.setImage(with: image)
         nameLabel.text = name
@@ -71,5 +72,10 @@ final class PhotoDetailProfileView: BaseView {
         }
         dateFormatter.dateFormat = "yyyy년 M월 d일 게시됨"
         createdAtLabel.text = dateFormatter.string(from: date)
+        
+        if isWhite {
+            nameLabel.textColor = .white
+            createdAtLabel.textColor = .white
+        }
     }
 }

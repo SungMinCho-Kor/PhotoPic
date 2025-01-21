@@ -12,6 +12,7 @@ enum DefaultRouter {
     case fetchTopicList(topic: Topic)
     case fetchSearchList(searchRequest: SearchRequest)
     case fetchStatistics(id: String)
+    case fetchRandomPhotos
 }
 
 extension DefaultRouter: Router {
@@ -27,6 +28,8 @@ extension DefaultRouter: Router {
             return "/search/photos"
         case .fetchStatistics(let id):
             return "/photos/\(id)/statistics"
+        case .fetchRandomPhotos:
+            return "/photos/random?count=10"
         }
     }
     
@@ -37,6 +40,8 @@ extension DefaultRouter: Router {
         case .fetchSearchList:
             return .get
         case .fetchStatistics:
+            return .get
+        case .fetchRandomPhotos:
             return .get
         }
     }
@@ -58,6 +63,8 @@ extension DefaultRouter: Router {
         case .fetchSearchList(let searchRequest):
             return searchRequest.asDictionary()
         case .fetchStatistics:
+            return [:]
+        case .fetchRandomPhotos:
             return [:]
         }
     }
