@@ -132,7 +132,7 @@ final class TopicViewController: BaseViewController {
                 try await withThrowingTaskGroup(of: TopicContent.self) { group in
                     randomTopics.forEach { topic in
                         group.addTask {
-                            return try await APIService.shared.fetchTopic(topic: topic)
+                            return try await ConcurrencyAPIService.shared.fetchTopic(topic: topic)
                         }
                     }
                     for try await result in group {

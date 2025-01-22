@@ -81,7 +81,7 @@ final class MediaViewController: BaseViewController {
     
     private func fetchData() {
         Task {
-            list = try await APIService.shared.fetchRandomPhotos()
+            list = try await ConcurrencyAPIService.shared.fetchRandomPhotos()
             collectionView.reloadData()
         }
     }

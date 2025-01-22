@@ -149,7 +149,7 @@ final class SearchViewController: BaseViewController {
     
     private func fetchData() async throws -> SearchResponse {
         if let filterColorIndex = prevState.filterColorIndex {
-            return try await APIService.shared.fetchSearchList(
+            return try await ConcurrencyAPIService.shared.fetchSearchList(
                 searchRequest: SearchRequest(
                     query: prevState.searchText,
                     page: prevState.currentPage,
@@ -159,7 +159,7 @@ final class SearchViewController: BaseViewController {
                 )
             )
         } else {
-            return try await APIService.shared.fetchSearchList(
+            return try await ConcurrencyAPIService.shared.fetchSearchList(
                 searchRequest: SearchRequest(
                     query: prevState.searchText,
                     page: prevState.currentPage,

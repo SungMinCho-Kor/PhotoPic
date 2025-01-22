@@ -171,7 +171,7 @@ final class PhotoDetailViewController: BaseViewController {
     
     private func fetchStatisticsData() {
         Task {
-            let result = try await APIService.shared.fetchStatistics(id: photoDetail.id)
+            let result = try await ConcurrencyAPIService.shared.fetchStatistics(id: photoDetail.id)
             downloadInformationView.configure(
                 title: "다운로드",
                 content: result.downloads.total.formatted()

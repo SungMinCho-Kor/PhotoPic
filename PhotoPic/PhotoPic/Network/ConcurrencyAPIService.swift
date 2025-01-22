@@ -1,5 +1,5 @@
 //
-//  APIService.swift
+//  ConcurrencyAPIService.swift
 //  PhotoPic
 //
 //  Created by 조성민 on 1/18/25.
@@ -8,8 +8,8 @@
 import Alamofire
 import Foundation
 
-final class APIService {
-    static let shared = APIService()
+final class ConcurrencyAPIService {
+    static let shared = ConcurrencyAPIService()
     
     private init() {}
     
