@@ -12,6 +12,7 @@ final class MediaViewController: BaseViewController {
         frame: .zero,
         collectionViewLayout: createCollectionViewLayout()
     )
+    private let pageBadgeView = PageBadgeView()
     private var list: [PhotoDetail] = []
     
     override func viewDidLoad() {
@@ -19,32 +20,24 @@ final class MediaViewController: BaseViewController {
         fetchData()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(
-            true,
-            animated: false
-        )
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        navigationController?.setNavigationBarHidden(
-            false,
-            animated: false
-        )
-    }
-    
     override func configureHierarchy() {
-        view.addSubview(collectionView)
+        [
+            collectionView,
+            pageBadgeView
+        ].forEach(view.addSubview)
     }
     
     override func configureLayout() {
         collectionView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        pageBadgeView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.width.equalTo(60)
+            make.height.equalTo(30)
         }
     }
     
@@ -63,11 +56,13 @@ final class MediaViewController: BaseViewController {
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isPagingEnabled = true
+        collectionView.contentInsetAdjustmentBehavior = .never
         
         collectionView.register(
             RandomPhotoCollectionViewCell.self,
             forCellWithReuseIdentifier: RandomPhotoCollectionViewCell.identifier
         )
+        pageBadgeView.setPage(current: 1, max: max(list.count, 1))
     }
     
     private func createCollectionViewLayout() -> UICollectionViewCompositionalLayout {
@@ -125,5 +120,13 @@ extension MediaViewController: UICollectionViewDelegate, UICollectionViewDataSou
             photoDetailViewController,
             animated: true
         )
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        willDisplay cell: UICollectionViewCell,
+        forItemAt indexPath: IndexPath
+    ) {
+        pageBadgeView.setPage(current: indexPath.row + 1, max: max(list.count, 1))
     }
 }
