@@ -157,8 +157,8 @@ final class TopicViewController: BaseViewController {
 //MARK: Refresh
 extension TopicViewController {
     private func enableRefreshAfterTime() {
-        DispatchQueue.global().asyncAfter(deadline: .now() + 60) { [weak self] in
-            self?.isRefreshEnabled = true
+        DispatchQueue.global().asyncAfter(deadline: .now() + 60) {
+            self.isRefreshEnabled = true
         }
     }
     
