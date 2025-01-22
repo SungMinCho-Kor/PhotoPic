@@ -17,6 +17,27 @@ enum CustomError: Error {
     case unknown
     case alamofireError
     case deinitialized
+    
+    var alert: String {
+        switch self {
+        case .badRequest:
+            "파라미터 오류"
+        case .unauthorized:
+            "토큰 오류"
+        case .forbidden:
+            "권한 오류"
+        case .notFound:
+            "페이지 오류"
+        case .wrongEnd:
+            "서버 오류"
+        case .unknown:
+            "알 수 없는 오류"
+        case .alamofireError:
+            "내부 오류"
+        case .deinitialized:
+            "내부 메모리 오류"
+        }
+    }
 }
 
 final class GCDAPIService {

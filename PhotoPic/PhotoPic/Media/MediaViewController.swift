@@ -84,8 +84,8 @@ final class MediaViewController: BaseViewController {
             api: DefaultRouter.fetchRandomPhotos) { [weak self] (result: [PhotoDetail]) in
                 self?.list = result
                 self?.collectionView.reloadData()
-            } failureCompletion: { (error: CustomError) in
-                dump(error)
+            } failureCompletion: { [weak self] (error: CustomError) in
+                self?.presentErrorAlert(error: error)
             }
 
     }

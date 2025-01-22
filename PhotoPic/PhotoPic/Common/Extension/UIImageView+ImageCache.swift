@@ -14,7 +14,7 @@ extension UIImageView {
             switch result {
             case .success(let value):
                 if let image = value.image {
-                    Task { @MainActor in
+                    DispatchQueue.main.async {
                         guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate,
                               let window = sceneDelegate.window else {
                             print("SceneDelegate Wrong")
@@ -26,7 +26,7 @@ extension UIImageView {
                 } else {
                     guard let url = URL(string: urlString) else { return }
                     let resource = KF.ImageResource(downloadURL: url, cacheKey: urlString)
-                    Task { @MainActor in
+                    DispatchQueue.main.async {
                         self.kf.setImage(with: resource)
                     }
                 }

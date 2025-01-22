@@ -236,8 +236,8 @@ extension SearchViewController: UISearchBarDelegate {
                     animated: false
                 )
             }
-        } failureCompletion: { error in
-            dump(error)
+        } failureCompletion: { [weak self] (error: CustomError) in
+            self?.presentErrorAlert(error: error)
         }
     }
 }
@@ -312,8 +312,8 @@ extension SearchViewController: UICollectionViewDataSourcePrefetching {
                 ) { [weak self] (result: SearchResponse) in
                     self?.prevState.list.append(contentsOf: result.results)
                     collectionView.reloadData()
-                } failureCompletion: { error in
-                    dump(error)
+                } failureCompletion: { [weak self] (error: CustomError) in
+                    self?.presentErrorAlert(error: error)
                 }
             }
         }

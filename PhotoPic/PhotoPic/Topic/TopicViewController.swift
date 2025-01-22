@@ -136,8 +136,10 @@ final class TopicViewController: BaseViewController {
                         )
                     )
                     group.leave()
-                } failureCompletion: { error in
-                    dump(error)
+                } failureCompletion: { [weak self] (error: CustomError) in
+                    DispatchQueue.main.async {
+                        self?.presentErrorAlert(error: error)
+                    }
                     group.leave()
                 }
         }
@@ -155,9 +157,8 @@ final class TopicViewController: BaseViewController {
 //MARK: Refresh
 extension TopicViewController {
     private func enableRefreshAfterTime() {
-        Task {
-            try? await Task.sleep(for: .seconds(60))
-            isRefreshEnabled = true
+        DispatchQueue.global().asyncAfter(deadline: .now() + 60) { [weak self] in
+            self?.isRefreshEnabled = true
         }
     }
     

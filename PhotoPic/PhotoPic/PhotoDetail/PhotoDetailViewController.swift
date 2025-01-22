@@ -182,8 +182,8 @@ final class PhotoDetailViewController: BaseViewController {
                 )
                 self?.downloadChartView.rootView.configure(elements: result.downloads.historical.values)
                 self?.viewChartView.rootView.configure(elements: result.views.historical.values)
-            } failureCompletion: { error in
-                dump(error)
+            } failureCompletion: { [weak self] (error: CustomError) in
+                self?.presentErrorAlert(error: error)
             }
     }
     

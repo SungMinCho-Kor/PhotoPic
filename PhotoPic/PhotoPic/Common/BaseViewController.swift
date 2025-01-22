@@ -18,4 +18,20 @@ class BaseViewController: UIViewController, ViewConfiguration {
     func configureHierarchy() { }
     func configureLayout() { }
     func configureViews() { }
+    func presentErrorAlert(error: CustomError) {
+        let alert = UIAlertController(
+            title: nil,
+            message: error.alert,
+            preferredStyle: .alert
+        )
+        let ok = UIAlertAction(
+            title: "확인",
+            style: .default
+        )
+        alert.addAction(ok)
+        present(
+            alert,
+            animated: true
+        )
+    }
 }
