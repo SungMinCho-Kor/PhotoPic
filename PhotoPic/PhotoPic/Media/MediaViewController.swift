@@ -80,10 +80,14 @@ final class MediaViewController: BaseViewController {
     }
     
     private func fetchData() {
-        Task {
-            list = try await ConcurrencyAPIService.shared.fetchRandomPhotos()
-            collectionView.reloadData()
-        }
+        GCDAPIService.shared.request(
+            api: DefaultRouter.fetchRandomPhotos) { [weak self] (result: [PhotoDetail]) in
+                self?.list = result
+                self?.collectionView.reloadData()
+            } failureCompletion: { (error: CustomError) in
+                dump(error)
+            }
+
     }
 }
 

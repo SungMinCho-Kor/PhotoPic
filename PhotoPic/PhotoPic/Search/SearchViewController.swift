@@ -146,30 +146,6 @@ final class SearchViewController: BaseViewController {
         backButton.tintColor = .black
         navigationItem.backBarButtonItem = backButton
     }
-    
-    private func fetchData() async throws -> SearchResponse {
-        if let filterColorIndex = prevState.filterColorIndex {
-            return try await ConcurrencyAPIService.shared.fetchSearchList(
-                searchRequest: SearchRequest(
-                    query: prevState.searchText,
-                    page: prevState.currentPage,
-                    per_page: 20,
-                    order_by: prevState.order,
-                    color: SearchColor.allCases[filterColorIndex]
-                )
-            )
-        } else {
-            return try await ConcurrencyAPIService.shared.fetchSearchList(
-                searchRequest: SearchRequest(
-                    query: prevState.searchText,
-                    page: prevState.currentPage,
-                    per_page: 20,
-                    order_by: prevState.order,
-                    color: nil
-                )
-            )
-        }
-    }
 }
 
 //MARK: Objective-C
@@ -221,9 +197,24 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
     private func fetchSearchData(query: String) {
-        Task {
-            prevState = nextState
-            let newList = try await fetchData()
+        var filterColor: SearchColor? = nil
+        if let filterColorIndex = prevState.filterColorIndex {
+            filterColor = SearchColor.allCases[filterColorIndex]
+        }
+        prevState = nextState
+        GCDAPIService.shared.request(
+            api: DefaultRouter.fetchSearchList(
+                searchRequest: SearchRequest(
+                    query: prevState.searchText,
+                    page: prevState.currentPage,
+                    per_page: 20,
+                    order_by: prevState.order,
+                    color: filterColor
+                )
+            )
+        ) { [weak self] (result: SearchResponse) in
+            guard let self else { return }
+            let newList = result
             prevState.list = newList.results
             prevState.totalPages = newList.totalPages
             print("totalPages: ", prevState.totalPages)
@@ -245,6 +236,8 @@ extension SearchViewController: UISearchBarDelegate {
                     animated: false
                 )
             }
+        } failureCompletion: { error in
+            dump(error)
         }
     }
 }
@@ -300,11 +293,27 @@ extension SearchViewController: UICollectionViewDataSourcePrefetching {
         if indexPaths.contains([0, prevState.list.count - 1]) {
             if prevState.currentPage < prevState.totalPages {
                 print("pagination current page: ", prevState.currentPage+1)
-                Task {
-                    prevState.currentPage += 1
-                    let result = try await fetchData()
-                    prevState.list.append(contentsOf: result.results)
+                prevState.currentPage += 1
+                
+                var filterColor: SearchColor? = nil
+                if let filterColorIndex = prevState.filterColorIndex {
+                    filterColor = SearchColor.allCases[filterColorIndex]
+                }
+                GCDAPIService.shared.request(
+                    api: DefaultRouter.fetchSearchList(
+                        searchRequest: SearchRequest(
+                            query: prevState.searchText,
+                            page: prevState.currentPage,
+                            per_page: 20,
+                            order_by: prevState.order,
+                            color: filterColor
+                        )
+                    )
+                ) { [weak self] (result: SearchResponse) in
+                    self?.prevState.list.append(contentsOf: result.results)
                     collectionView.reloadData()
+                } failureCompletion: { error in
+                    dump(error)
                 }
             }
         }

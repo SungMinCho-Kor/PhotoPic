@@ -119,37 +119,35 @@ final class TopicViewController: BaseViewController {
     
     private func fetchData() {
         if !isRefreshEnabled {
-            Task {
-                try await Task.sleep(for: .milliseconds(600))
-                refreshControl.endRefreshing()
-            }
+            refreshControl.endRefreshing()
             return
         }
-        Task {
-            let randomTopics = Topic.allCases.shuffled().prefix(3)
-            var newList: [TopicContent] = []
-            do {
-                try await withThrowingTaskGroup(of: TopicContent.self) { group in
-                    randomTopics.forEach { topic in
-                        group.addTask {
-                            return try await ConcurrencyAPIService.shared.fetchTopic(topic: topic)
-                        }
-                    }
-                    for try await result in group {
-                        newList.append(result)
-                    }
+        let randomTopics = Topic.allCases.shuffled().prefix(3)
+        var newList: [TopicContent] = []
+        let group = DispatchGroup()
+        randomTopics.forEach { topic in
+            group.enter()
+            GCDAPIService.shared.request(
+                api: DefaultRouter.fetchTopicList(topic: topic)) { (result: [PhotoDetail]) in
+                    newList.append(
+                        TopicContent(
+                            topic: topic,
+                            list: result
+                        )
+                    )
+                    group.leave()
+                } failureCompletion: { error in
+                    dump(error)
+                    group.leave()
                 }
-                try await Task.sleep(for: .milliseconds(600))
-                refreshControl.endRefreshing()
-                topicList = newList
-                topicCollectionView.reloadData()
-                isRefreshEnabled = false
-                enableRefreshAfterTime()
-                scrollToLeft()
-            } catch {
-                // TODO: Error 처리
-                dump(error)
-            }
+        }
+        group.notify(queue: .main) {
+            self.refreshControl.endRefreshing()
+            self.topicList = newList
+            self.topicCollectionView.reloadData()
+            self.isRefreshEnabled = false
+            self.enableRefreshAfterTime()
+            self.scrollToLeft()
         }
     }
 }

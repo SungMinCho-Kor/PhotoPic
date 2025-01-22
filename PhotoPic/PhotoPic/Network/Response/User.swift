@@ -13,7 +13,6 @@ struct User: Decodable {
         case name
         case profileImage = "profile_image"
     }
-    
 }
 
 struct UserProfileImage: Decodable {

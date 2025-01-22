@@ -170,19 +170,21 @@ final class PhotoDetailViewController: BaseViewController {
     }
     
     private func fetchStatisticsData() {
-        Task {
-            let result = try await ConcurrencyAPIService.shared.fetchStatistics(id: photoDetail.id)
-            downloadInformationView.configure(
-                title: "다운로드",
-                content: result.downloads.total.formatted()
-            )
-            viewCountInformationView.configure(
-                title: "조회수",
-                content: result.views.total.formatted()
-            )
-            downloadChartView.rootView.configure(elements: result.downloads.historical.values)
-            viewChartView.rootView.configure(elements: result.views.historical.values)
-        }
+        GCDAPIService.shared.request(
+            api: DefaultRouter.fetchStatistics(id: photoDetail.id)) { [weak self] (result: StatisticsResponse) in
+                self?.downloadInformationView.configure(
+                    title: "다운로드",
+                    content: result.downloads.total.formatted()
+                )
+                self?.viewCountInformationView.configure(
+                    title: "조회수",
+                    content: result.views.total.formatted()
+                )
+                self?.downloadChartView.rootView.configure(elements: result.downloads.historical.values)
+                self?.viewChartView.rootView.configure(elements: result.views.historical.values)
+            } failureCompletion: { error in
+                dump(error)
+            }
     }
     
     private func setSwiftUIView() {
