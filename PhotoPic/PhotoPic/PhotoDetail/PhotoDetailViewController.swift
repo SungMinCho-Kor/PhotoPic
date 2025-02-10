@@ -10,6 +10,9 @@ import SnapKit
 import SwiftUI
 
 final class PhotoDetailViewController: BaseViewController {
+    private let viewModel: PhotoDetailViewModel
+    private let input = PhotoDetailViewModel.Input()
+    
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let profileView = PhotoDetailProfileView()
@@ -29,10 +32,10 @@ final class PhotoDetailViewController: BaseViewController {
     private let viewChartView = UIHostingController(rootView: ChartView())
     private let downloadChartView = UIHostingController(rootView: ChartView())
     
-    private let photoDetail: PhotoDetail
+//    private let photoDetail: PhotoDetail
     
     init(photoDetail: PhotoDetail) {
-        self.photoDetail = photoDetail
+        viewModel = PhotoDetailViewModel(photoDetail: photoDetail)
         super.init(
             nibName: nil,
             bundle: nil
@@ -45,8 +48,9 @@ final class PhotoDetailViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchStatisticsData()
         setSwiftUIView()
+        bind()
+        input.viewDidLoad.value = ()
     }
     
     override func configureHierarchy() {
@@ -84,11 +88,11 @@ final class PhotoDetailViewController: BaseViewController {
             make.height.equalTo(80)
         }
         
-        imageView.snp.makeConstraints { make in
-            make.top.equalTo(profileView.snp.bottom)
-            make.horizontalEdges.equalToSuperview()
-            make.height.equalTo(contentView.snp.width).multipliedBy(Double(photoDetail.height) / Double(photoDetail.width))
-        }
+//        imageView.snp.makeConstraints { make in
+//            make.top.equalTo(profileView.snp.bottom)
+//            make.horizontalEdges.equalToSuperview()
+//            make.height.equalTo(contentView.snp.width).multipliedBy(Double(photoDetail.height) / Double(photoDetail.width))
+//        }
         
         informationLabel.snp.makeConstraints { make in
             make.top.equalTo(imageView.snp.bottom).offset(16)
@@ -155,36 +159,55 @@ final class PhotoDetailViewController: BaseViewController {
         )
         chartSegmentedControl.selectedSegmentIndex = 0
         
-        profileView.configure(
-            image: photoDetail.user.profileImage.value,
-            name: photoDetail.user.name,
-            createdAt: photoDetail.createdAt
-        )
-        
-        imageView.setImage(with: photoDetail.image.value)
-        
-        sizeInformationView.configure(
-            title: "크기",
-            content: "\(photoDetail.width) x \(photoDetail.height)"
-        )
     }
     
-    private func fetchStatisticsData() {
-        GCDAPIService.shared.request(
-            api: DefaultRouter.fetchStatistics(id: photoDetail.id)) { [weak self] (result: StatisticsResponse) in
-                self?.downloadInformationView.configure(
-                    title: "다운로드",
-                    content: result.downloads.total.formatted()
-                )
-                self?.viewCountInformationView.configure(
-                    title: "조회수",
-                    content: result.views.total.formatted()
-                )
-                self?.downloadChartView.rootView.configure(elements: result.downloads.historical.values)
-                self?.viewChartView.rootView.configure(elements: result.views.historical.values)
-            } failureCompletion: { [weak self] (error: CustomError) in
-                self?.presentErrorAlert(error: error)
+    private func bind() {
+        let output = viewModel.transform(input: input)
+        
+        output.configureDetail.bind { [weak self] photoDetail in
+            guard let self else { return }
+            profileView.configure(
+                image: photoDetail.user.profileImage.value,
+                name: photoDetail.user.name,
+                createdAt: photoDetail.createdAt
+            )
+            
+            imageView.snp.makeConstraints { [weak self] make in
+                guard let self else { return }
+                make.top.equalTo(profileView.snp.bottom)
+                make.horizontalEdges.equalToSuperview()
+                make.height.equalTo(contentView.snp.width).multipliedBy(Double(photoDetail.height) / Double(photoDetail.width))
             }
+            
+            imageView.setImage(with: photoDetail.image.value)
+            
+            sizeInformationView.configure(
+                title: "크기",
+                content: "\(photoDetail.width) x \(photoDetail.height)"
+            )
+        }
+        
+        output.loadStatisticsData.bind { [weak self] response in
+            guard let response else {
+                return
+            }
+            
+            self?.downloadInformationView.configure(
+                title: "다운로드",
+                content: response.downloads.total.formatted()
+            )
+            self?.viewCountInformationView.configure(
+                title: "조회수",
+                content: response.views.total.formatted()
+            )
+            self?.downloadChartView.rootView.configure(elements: response.downloads.historical.values)
+            self?.viewChartView.rootView.configure(elements: response.views.historical.values)
+        }
+        
+        output.convertChart.bind { [weak self] isViewsChart in
+            self?.downloadChartView.view.isHidden = isViewsChart
+            self?.viewChartView.view.isHidden = !isViewsChart
+        }
     }
     
     private func setSwiftUIView() {
@@ -201,7 +224,6 @@ final class PhotoDetailViewController: BaseViewController {
 extension PhotoDetailViewController {
     @objc
     private func chartSegmentedControlChanged(_ sender: UISegmentedControl) {
-        downloadChartView.view.isHidden = sender.selectedSegmentIndex == 0
-        viewChartView.view.isHidden = sender.selectedSegmentIndex != 0
+        input.segmentedControlChanged.value = sender.selectedSegmentIndex
     }
 }
